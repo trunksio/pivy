@@ -25,8 +25,8 @@ def create_keystore(codebook):
 def tokenise(target,codebook):
     tl = len(target)
     '''pad to at least 9 chars with special chr(127) ~'''
-    #if tl < 10:
-    #    target = padfoot(target,10)
+    if tl < 10:
+        target = padfoot(target,10)
     tl = len(target)
     for i in range(0,tl,1):
         s = target[i:i+3]
