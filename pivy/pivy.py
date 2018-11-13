@@ -22,7 +22,7 @@ def create_keystore(codebook):
         r.set(codebook +":"+key[i],value[i])
         r.set(codebook + ":D:" + value[i], key[i])
 
-def tokenise(target,codebook):
+def forward_tokenise(target,codebook):
     tl = len(target)
     '''pad to at least 9 chars with special chr(127) ~'''
     if tl < 10:
@@ -39,6 +39,12 @@ def tokenise(target,codebook):
 
     return target
 
+def tokenise(target,codebook, i):
+    for x in range(0,i,1):
+        var = forward_tokenise(target, codebook)
+        var = reversed_string(var)
+        var = forward_tokenise(var, codebook)
+    return var
 
 def padfoot(target, val):
     for i in range(len(target),val):
@@ -50,7 +56,17 @@ def depad(target):
         target = depad(target)
     return target
 
-def detokenise(target,codebook):
+def detokenise(target,codebook,i):
+    codebook = codebook +':D'
+    for x in range(0,i,1):
+        out = forward_detokenise(target, codebook)
+        out = depad(out)
+        out = reversed_string(out)
+        out = forward_detokenise(out, codebook)
+        out = depad(out)
+    return out
+
+def forward_detokenise(target,codebook):
 
     tl = len(target)
     '''pad to at least 9 chars with special chr(127) ~'''
@@ -73,23 +89,15 @@ def reversed_string(a_string):
 
 def main():
     #create_keystore("Surname")
-    var = tokenise('Lewis','Surname')
-    print('1:'+var)
-    var = reversed_string(var)
-    print('2:'+var)
-    var = tokenise(var, 'Surname')
-    print('3:'+var)
+    var = tokenise('Lewis Crawford', 'Surname', 4)
+    print(var)
 
-    out = detokenise(var,'Surname:D')
-    print('4:'+out)
-    out = depad(out)
-    out = reversed_string(out)
-    print('5:'+out)
-    out = depad(out)
-    out = detokenise(out, 'Surname:D')
-    print('6:'+out)
-    out = depad(out)
-    print('7:'+out)
+    out = detokenise(var, 'Surname', 4)
+    print(out)
+
+
+
+
 
 if __name__ == '__main__':
     main()
